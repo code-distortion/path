@@ -345,19 +345,19 @@ abstract class AbstractPath implements PathInterface
         $count = 0;
         foreach ($parts as $part) {
 
-            $isLast = ++$count == count($parts);
+            $isLast = (++$count === count($parts));
 
-            if ($part == '.') {
+            if ($part === '.') {
                 $newParts[] = $part;
                 continue;
             }
 
-            if ($part == '..') {
+            if ($part === '..') {
                 if ($depth > 0) {
                     $newParts[] = $part;
                     $depth--;
                 } else {
-                    if ((count($newParts)) && ($isLast)) {
+                    if ($isLast) {
                         $newParts[] = '';
                     }
                 }
@@ -390,14 +390,14 @@ abstract class AbstractPath implements PathInterface
 
             $latestPartWasDotDot = false;
 
-            if ($part == '.') {
-                if (count($newParts)) {
+            if ($part === '.') {
+                if (count($newParts) > 0) {
                     $newParts[] = '';
                 }
                 continue;
             }
 
-            if ($part == '..') {
+            if ($part === '..') {
                 array_pop($newParts);
                 $latestPartWasDotDot = true;
                 continue;
@@ -405,7 +405,7 @@ abstract class AbstractPath implements PathInterface
             $newParts[] = $part;
         }
 
-        if (($latestPartWasDotDot) && (count($newParts))) {
+        if ($latestPartWasDotDot) {
             $newParts[] = '';
         }
 

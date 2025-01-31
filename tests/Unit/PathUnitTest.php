@@ -6,6 +6,8 @@ use CodeDistortion\Path\AbstractPath;
 use CodeDistortion\Path\Path;
 use CodeDistortion\Path\PathImmutable;
 use CodeDistortion\Path\Tests\PHPUnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 /**
  * Test the Path and PathImmutable classes.
@@ -26,6 +28,8 @@ class PathUnitTest extends PHPUnitTestCase
      * @param string|null $filename  The expected filename.
      * @return void
      */
+    #[Test]
+    #[DataProvider('pathsDataProvider')]
     public function test_that_parsed_paths_come_out_the_same(
         string $inputPath,
         string $expected,
@@ -43,44 +47,47 @@ class PathUnitTest extends PHPUnitTestCase
     /**
      * DataProvider for test_that_parsed_paths_come_out_the_same().
      *
-     * @return array<int, array<string, string>>
+     * @return list<array{inputPath: string, expected: string, dir: string, filename: string|null}>
      */
     public static function pathsDataProvider(): array
     {
+        /** @var array<array{inputPath: string, expected: string, dir: string, filename: string|null}> $return */
         $return = [
-            ['path' => '', 'expected' => '', 'dir' => '', 'filename' => null],
-            ['path' => '/', 'expected' => '/', 'dir' => '/', 'filename' => null],
-            ['path' => '//', 'expected' => '//', 'dir' => '//', 'filename' => null],
+            ['inputPath' => '', 'expected' => '', 'dir' => '', 'filename' => null],
+            ['inputPath' => '/', 'expected' => '/', 'dir' => '/', 'filename' => null],
+            ['inputPath' => '//', 'expected' => '//', 'dir' => '//', 'filename' => null],
 
-            ['path' => 'z', 'expected' => 'z', 'dir' => '', 'filename' => 'z'],
-            ['path' => '/z', 'expected' => '/z', 'dir' => '/', 'filename' => 'z'],
-            ['path' => 'z/', 'expected' => 'z/', 'dir' => 'z/', 'filename' => null],
-            ['path' => '/z/', 'expected' => '/z/', 'dir' => '/z/', 'filename' => null],
+            ['inputPath' => 'z', 'expected' => 'z', 'dir' => '', 'filename' => 'z'],
+            ['inputPath' => '/z', 'expected' => '/z', 'dir' => '/', 'filename' => 'z'],
+            ['inputPath' => 'z/', 'expected' => 'z/', 'dir' => 'z/', 'filename' => null],
+            ['inputPath' => '/z/', 'expected' => '/z/', 'dir' => '/z/', 'filename' => null],
 
-            ['path' => '/', 'expected' => '/', 'dir' => '/', 'filename' => null],
-//            ['path' => '//', 'expected' => '//', 'dir' => '//', 'filename' => null],
-//            ['path' => '//', 'expected' => '//', 'dir' => '//', 'filename' => null],
-            ['path' => '///', 'expected' => '///', 'dir' => '///', 'filename' => null],
+            ['inputPath' => '/', 'expected' => '/', 'dir' => '/', 'filename' => null],
+//            ['inputPath' => '//', 'expected' => '//', 'dir' => '//', 'filename' => null],
+//            ['inputPath' => '//', 'expected' => '//', 'dir' => '//', 'filename' => null],
+            ['inputPath' => '///', 'expected' => '///', 'dir' => '///', 'filename' => null],
 
-            ['path' => '/z/z', 'expected' => '/z/z', 'dir' => '/z/', 'filename' => 'z'],
-            ['path' => '//z/z', 'expected' => '//z/z', 'dir' => '//z/', 'filename' => 'z'],
-            ['path' => '/z/z/', 'expected' => '/z/z/', 'dir' => '/z/z/', 'filename' => null],
-            ['path' => '//z/z/', 'expected' => '//z/z/', 'dir' => '//z/z/', 'filename' => null],
+            ['inputPath' => '/z/z', 'expected' => '/z/z', 'dir' => '/z/', 'filename' => 'z'],
+            ['inputPath' => '//z/z', 'expected' => '//z/z', 'dir' => '//z/', 'filename' => 'z'],
+            ['inputPath' => '/z/z/', 'expected' => '/z/z/', 'dir' => '/z/z/', 'filename' => null],
+            ['inputPath' => '//z/z/', 'expected' => '//z/z/', 'dir' => '//z/z/', 'filename' => null],
 
-            ['path' => 'z/z/', 'expected' => 'z/z/', 'dir' => 'z/z/', 'filename' => null],
-            ['path' => '/z/z/', 'expected' => '/z/z/', 'dir' => '/z/z/', 'filename' => null],
-            ['path' => 'z/z//', 'expected' => 'z/z//', 'dir' => 'z/z//', 'filename' => null],
-            ['path' => '/z/z//', 'expected' => '/z/z//', 'dir' => '/z/z//', 'filename' => null],
+            ['inputPath' => 'z/z/', 'expected' => 'z/z/', 'dir' => 'z/z/', 'filename' => null],
+            ['inputPath' => '/z/z/', 'expected' => '/z/z/', 'dir' => '/z/z/', 'filename' => null],
+            ['inputPath' => 'z/z//', 'expected' => 'z/z//', 'dir' => 'z/z//', 'filename' => null],
+            ['inputPath' => '/z/z//', 'expected' => '/z/z//', 'dir' => '/z/z//', 'filename' => null],
         ];
 
-        $preProcessInput = function (array $params, $inputSeparator, $osSeparator) {
+        $preProcessInput = function (array $params, string $inputSeparator, string $osSeparator) {
 
-            $path = str_replace('/', $inputSeparator, $params['path']);
+            /** @var array{inputPath: string, expected: string, dir: string, filename: string|null} $params */
+
+            $path = str_replace('/', $inputSeparator, $params['inputPath']);
             $expected = str_replace('/', $osSeparator, $params['expected']);
             $dir = str_replace('/', $osSeparator, $params['dir']);
             $filename = $params['filename'];
 
-            return ['path' => $path, 'expected' => $expected, 'dir' => $dir, 'filename' => $filename];
+            return ['inputPath' => $path, 'expected' => $expected, 'dir' => $dir, 'filename' => $filename];
         };
 
         $return2 = [];
@@ -99,6 +106,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_new(): void
     {
         $path = Path::new('')->separator('/');
@@ -269,6 +277,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_new_dir(): void
     {
         $path = Path::newDir('')->separator('/');
@@ -426,6 +435,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_new_file(): void
     {
         $path = Path::newFile('')->separator('/');
@@ -592,6 +602,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_resolve(): void
     {
         $path = Path::new('')->separator('/')->resolve();
@@ -699,6 +710,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_add(): void
     {
         $path = Path::new('')->separator('/')->add('/');
@@ -816,6 +828,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_get_dir(): void
     {
         $path = Path::new('')->separator('/');
@@ -884,6 +897,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_get_filename(): void
     {
         $path = Path::new('')->separator('/');
@@ -993,6 +1007,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_get_extension(): void
     {
         $path = Path::new('')->separator('/');
@@ -1050,6 +1065,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_is_absolute_and_is_relative(): void
     {
         $path = Path::new('')->separator('/');
@@ -1100,6 +1116,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_separator_when_not_specified(): void
     {
         $input = '/a/b/c/';
@@ -1121,6 +1138,8 @@ class PathUnitTest extends PHPUnitTestCase
      * @param string      $expected  The expected result.
      * @return void
      */
+    #[Test]
+    #[DataProvider('separatorDataProvider')]
     public function test_separator(string $inputPath, ?string $separator, string $expected): void
     {
         $path = Path::new($inputPath)->separator($separator);
@@ -1182,6 +1201,7 @@ class PathUnitTest extends PHPUnitTestCase
      *
      * @return void
      */
+    #[Test]
     public function test_immutability(): void
     {
         // what is Path?
